@@ -1,0 +1,8 @@
+[package]
+authors = ["Saverio Miroddi <saverio.pub2@gmail.com>"]
+edition = "2018"
+name = "playground"
+version = "0.1.0"
+
+[dependencies]
+bevy = { version = "0.5.0", features = ["dynamic"] }
