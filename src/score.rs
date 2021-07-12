@@ -1,6 +1,6 @@
 use bevy::{
     math::Rect,
-    prelude::{AssetServer, Color, Commands, Query, Res, TextBundle, With},
+    prelude::{AssetServer, Bundle, Color, Commands, Query, Res, TextBundle, With},
     text::{Text, TextSection, TextStyle},
     ui::{PositionType, Style, Val},
 };
@@ -17,42 +17,59 @@ pub struct Score(pub usize);
 
 pub struct Scoreboard;
 
-pub fn spawn_scoreboard(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
-        .spawn_bundle(TextBundle {
-            text: Text {
-                sections: vec![
-                    TextSection {
-                        value: "Score: ".to_string(),
-                        style: TextStyle {
-                            font: asset_server.load(SCOREBOARD_FONT_PATH),
-                            font_size: SCORE_FONT_SIZE,
-                            color: SCOREBOARD_COLOR,
-                        },
+#[derive(Bundle)]
+struct ScoreboardBundle {
+    #[bundle]
+    text_bundle: TextBundle,
+    scoreboard: Scoreboard,
+}
+
+impl ScoreboardBundle {
+    fn new(asset_server: Res<AssetServer>) -> Self {
+        let text = Text {
+            sections: vec![
+                TextSection {
+                    value: "Score: ".to_string(),
+                    style: TextStyle {
+                        font: asset_server.load(SCOREBOARD_FONT_PATH),
+                        font_size: SCORE_FONT_SIZE,
+                        color: SCOREBOARD_COLOR,
                     },
-                    TextSection {
-                        value: "".to_string(),
-                        style: TextStyle {
-                            font: asset_server.load(SCORE_FONT_PATH),
-                            font_size: SCORE_FONT_SIZE,
-                            color: SCORE_COLOR,
-                        },
-                    },
-                ],
-                ..Default::default()
-            },
-            style: Style {
-                position_type: PositionType::Absolute,
-                position: Rect {
-                    top: SCORE_PADDING,
-                    left: SCORE_PADDING,
-                    ..Default::default()
                 },
+                TextSection {
+                    value: "".to_string(),
+                    style: TextStyle {
+                        font: asset_server.load(SCORE_FONT_PATH),
+                        font_size: SCORE_FONT_SIZE,
+                        color: SCORE_COLOR,
+                    },
+                },
+            ],
+            ..Default::default()
+        };
+        let style = Style {
+            position_type: PositionType::Absolute,
+            position: Rect {
+                top: SCORE_PADDING,
+                left: SCORE_PADDING,
                 ..Default::default()
             },
             ..Default::default()
-        })
-        .insert(Scoreboard);
+        };
+
+        Self {
+            text_bundle: TextBundle {
+                text,
+                style,
+                ..Default::default()
+            },
+            scoreboard: Scoreboard,
+        }
+    }
+}
+
+pub fn spawn_scoreboard(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn_bundle(ScoreboardBundle::new(asset_server));
 }
 
 /// Updates the Scoreboard entity's Text based on the value of the Score resource

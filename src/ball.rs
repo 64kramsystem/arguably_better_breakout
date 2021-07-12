@@ -1,7 +1,8 @@
 use bevy::{
     math::{const_quat, const_vec2, const_vec3, Vec2},
     prelude::{
-        Assets, Color, Commands, Entity, Query, ResMut, SpriteBundle, Transform, With, Without,
+        Assets, Bundle, Color, Commands, Entity, Query, ResMut, SpriteBundle, Transform, With,
+        Without,
     },
     sprite::{
         collide_aabb::{collide, Collision},
@@ -25,7 +26,32 @@ const BALL_STARTING_TRANSFORM: Transform = Transform {
 
 pub struct Ball;
 
-pub fn spawn_ball(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+#[derive(Bundle)]
+struct BallBundle {
+    #[bundle]
+    sprite_bundle: SpriteBundle,
+    ball: Ball,
+    collides: Collides,
+    starting_velocity: Velocity,
+}
+
+impl BallBundle {
+    fn new(ball_starting_velocity: Velocity, mut materials: ResMut<Assets<ColorMaterial>>) -> Self {
+        Self {
+            sprite_bundle: SpriteBundle {
+                material: materials.add(BALL_COLOR.into()),
+                transform: BALL_STARTING_TRANSFORM,
+                sprite: Sprite::new(BALL_SIZE),
+                ..Default::default()
+            },
+            ball: Ball,
+            collides: Collides,
+            starting_velocity: ball_starting_velocity,
+        }
+    }
+}
+
+pub fn spawn_ball(mut commands: Commands, materials: ResMut<Assets<ColorMaterial>>) {
     // .normalize is not a const fn, so we have to perform this operation at runtime
     // FIXME: Blocked on https://github.com/bitshifter/glam-rs/issues/76
     let normalized_direction = BALL_STARTING_DIRECTION.normalize();
@@ -34,16 +60,7 @@ pub fn spawn_ball(mut commands: Commands, mut materials: ResMut<Assets<ColorMate
         y: normalized_direction.y * BALL_STARTING_SPEED,
     };
 
-    commands
-        .spawn_bundle(SpriteBundle {
-            material: materials.add(BALL_COLOR.into()),
-            transform: BALL_STARTING_TRANSFORM,
-            sprite: Sprite::new(BALL_SIZE),
-            ..Default::default()
-        })
-        .insert(Ball)
-        .insert(Collides)
-        .insert(ball_starting_velocity);
+    commands.spawn_bundle(BallBundle::new(ball_starting_velocity, materials));
 }
 
 /// Detects and handles ball collisions

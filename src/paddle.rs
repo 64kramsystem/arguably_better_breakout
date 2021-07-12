@@ -2,7 +2,7 @@ use bevy::{
     input::Input,
     math::{const_quat, const_vec2, const_vec3, Vec2},
     prelude::{
-        Assets, Color, Commands, KeyCode, Query, Res, ResMut, SpriteBundle, Transform, With,
+        Assets, Bundle, Color, Commands, KeyCode, Query, Res, ResMut, SpriteBundle, Transform, With,
     },
     sprite::{ColorMaterial, Sprite},
 };
@@ -25,19 +25,35 @@ pub struct Paddle {
     pub speed: f32,
 }
 
-pub fn spawn_paddle(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    commands
-        .spawn_bundle(SpriteBundle {
-            material: materials.add(PADDLE_COLOR.into()),
-            transform: PADDLE_STARTING_TRANSFORM,
-            sprite: Sprite::new(PADDLE_SIZE),
-            ..Default::default()
-        })
-        .insert(Paddle {
-            speed: PADDLE_SPEED,
-        })
-        .insert(Collides)
-        .insert(Velocity::default());
+#[derive(Bundle)]
+struct PaddleBundle {
+    #[bundle]
+    sprite_bundle: SpriteBundle,
+    paddle: Paddle,
+    collides: Collides,
+    velocity: Velocity,
+}
+
+impl PaddleBundle {
+    fn new(mut materials: ResMut<Assets<ColorMaterial>>) -> Self {
+        Self {
+            sprite_bundle: SpriteBundle {
+                material: materials.add(PADDLE_COLOR.into()),
+                transform: PADDLE_STARTING_TRANSFORM,
+                sprite: Sprite::new(PADDLE_SIZE),
+                ..Default::default()
+            },
+            paddle: Paddle {
+                speed: PADDLE_SPEED,
+            },
+            collides: Collides,
+            velocity: Velocity::default(),
+        }
+    }
+}
+
+pub fn spawn_paddle(mut commands: Commands, materials: ResMut<Assets<ColorMaterial>>) {
+    commands.spawn_bundle(PaddleBundle::new(materials));
 }
 
 /// Reads left and right arrow key inputs to set paddle velocity
