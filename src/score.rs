@@ -1,11 +1,16 @@
 use bevy::{
     math::Rect,
-    prelude::{AssetServer, Commands, Query, Res, TextBundle, With},
+    prelude::{AssetServer, Color, Commands, Query, Res, TextBundle, With},
     text::{Text, TextSection, TextStyle},
-    ui::{PositionType, Style},
+    ui::{PositionType, Style, Val},
 };
 
-use crate::config::*;
+const SCOREBOARD_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
+const SCORE_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
+const SCORE_FONT_SIZE: f32 = 40.0;
+const SCORE_PADDING: Val = Val::Px(5.0);
+const SCOREBOARD_FONT_PATH: &str = "fonts/FiraSans-Bold.ttf";
+const SCORE_FONT_PATH: &str = "fonts/FiraSans-Bold.ttf";
 
 #[derive(Default)]
 pub struct Score(pub usize);

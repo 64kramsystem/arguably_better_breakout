@@ -1,12 +1,16 @@
 use bevy::{
-    math::Vec2,
-    prelude::{Assets, Bundle, Commands, Handle, ResMut, SpriteBundle, Transform},
+    math::{const_vec2, Vec2},
+    prelude::{Assets, Bundle, Color, Commands, Handle, ResMut, SpriteBundle, Transform},
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::{collides::Collides, config::*};
+use crate::collides::Collides;
 
 /// Defines which side of the arena a wall is part of
+pub const ARENA_BOUNDS: Vec2 = const_vec2!([900.0, 600.0]);
+pub const WALL_THICKNESS: f32 = 10.0;
+pub const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
+
 enum Side {
     Top,
     Bottom,

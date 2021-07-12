@@ -1,10 +1,17 @@
 use bevy::{
     math::Vec2,
-    prelude::{Assets, Bundle, Commands, Handle, ResMut, SpriteBundle, Transform},
+    prelude::{Assets, Bundle, Color, Commands, Handle, ResMut, SpriteBundle, Transform},
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::{collides::Collides, config::*};
+use crate::collides::Collides;
+
+const BRICK_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
+const BRICK_WIDTH: f32 = 150.0;
+const BRICK_HEIGHT: f32 = 30.0;
+const BRICK_ROWS: i8 = 4;
+const BRICK_COLUMNS: i8 = 5;
+const BRICK_SPACING: f32 = 20.0;
 
 pub struct Brick;
 

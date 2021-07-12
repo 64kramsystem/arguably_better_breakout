@@ -2,7 +2,6 @@ mod ball;
 mod brick;
 mod camera;
 mod collides;
-mod config;
 mod kinematics;
 mod paddle;
 mod score;
@@ -16,12 +15,15 @@ use bevy::{
 
 use brick::spawn_bricks;
 use camera::spawn_cameras;
-use config::*;
 use kinematics::kinematics;
 use paddle::{bound_paddle, paddle_input, spawn_paddle};
 use score::{spawn_scoreboard, update_scoreboard, Score};
 use velocity::Velocity;
 use wall::spawn_walls;
+
+pub const TIME_STEP: f32 = 1.0 / 60.0;
+
+const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 
 /// A simple implementation of the classic game "Breakout"
 fn main() {

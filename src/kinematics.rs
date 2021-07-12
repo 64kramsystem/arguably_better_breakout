@@ -1,6 +1,6 @@
 use bevy::prelude::{Query, Transform};
 
-use crate::{config::*, velocity::Velocity};
+use crate::{velocity::Velocity, TIME_STEP};
 
 /// Moves everything with both a Transform and a Velocity accordingly
 pub fn kinematics(query: Query<(&mut Transform, &Velocity)>) {

@@ -1,13 +1,27 @@
 use bevy::{
-    prelude::{Assets, Commands, Entity, Query, ResMut, SpriteBundle, Transform, With, Without},
+    math::{const_quat, const_vec2, const_vec3, Vec2},
+    prelude::{
+        Assets, Color, Commands, Entity, Query, ResMut, SpriteBundle, Transform, With, Without,
+    },
     sprite::{
         collide_aabb::{collide, Collision},
         ColorMaterial, Sprite,
     },
 };
 
-use crate::{brick::Brick, collides::Collides, config::*, score::Score, Velocity};
+use crate::{brick::Brick, collides::Collides, score::Score, Velocity};
 
+const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
+// Our ball is actually a square. Shhh...
+const BALL_SIZE: Vec2 = const_vec2!([30.0, 30.0]);
+const BALL_STARTING_DIRECTION: Vec2 = const_vec2!([0.5, -0.5]);
+const BALL_STARTING_SPEED: f32 = 400.0;
+// We set the z-value to one to ensure it appears on top of our other objects in case of overlap
+const BALL_STARTING_TRANSFORM: Transform = Transform {
+    translation: const_vec3!([0.0, -50.0, 1.0]),
+    rotation: const_quat!([0.0, 0.0, 0.0, 0.0]),
+    scale: const_vec3!([1.0, 1.0, 1.0]),
+};
 
 pub struct Ball;
 

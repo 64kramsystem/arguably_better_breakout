@@ -1,10 +1,25 @@
 use bevy::{
     input::Input,
-    prelude::{Assets, Commands, KeyCode, Query, Res, ResMut, SpriteBundle, Transform, With},
+    math::{const_quat, const_vec2, const_vec3, Vec2},
+    prelude::{
+        Assets, Color, Commands, KeyCode, Query, Res, ResMut, SpriteBundle, Transform, With,
+    },
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::{collides::Collides, config::*, velocity::Velocity};
+use crate::{collides::Collides, velocity::Velocity, TIME_STEP};
+
+const PADDLE_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
+const PADDLE_SPEED: f32 = 20000.0;
+const PADDLE_SIZE: Vec2 = const_vec2!([120.0, 30.0]);
+const PADDLE_BOUND: f32 = 380.0;
+const PADDLE_STARTING_TRANSFORM: Transform = Transform {
+    translation: const_vec3!([0.0, -215.0, 0.0]),
+    // We don't want any rotation
+    rotation: const_quat!([0.0, 0.0, 0.0, 0.0]),
+    // We want the scale to be 1 in all directions
+    scale: const_vec3!([1.0, 1.0, 1.0]),
+};
 
 pub struct Paddle {
     pub speed: f32,
