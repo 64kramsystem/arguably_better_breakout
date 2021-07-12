@@ -1,13 +1,15 @@
 use bevy::{
+    core::Time,
     input::Input,
     math::{const_quat, const_vec2, const_vec3, Vec2},
     prelude::{
-        Assets, Bundle, Color, Commands, KeyCode, Query, Res, ResMut, SpriteBundle, Transform, With,
+        Assets, Bundle, Color, Commands, KeyCode, Local, Query, Res, ResMut, SpriteBundle,
+        Transform, With,
     },
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::{collides::Collides, velocity::Velocity, TIME_STEP};
+use crate::{collides::Collides, velocity::Velocity};
 
 const PADDLE_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
 const PADDLE_SPEED: f32 = 20000.0;
@@ -58,6 +60,8 @@ pub fn spawn_paddle(mut commands: Commands, materials: ResMut<Assets<ColorMateri
 
 /// Reads left and right arrow key inputs to set paddle velocity
 pub fn paddle_input(
+    mut last_time: Local<f64>,
+    time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&Paddle, &mut Velocity)>,
 ) {
@@ -74,7 +78,11 @@ pub fn paddle_input(
         direction += 1.0;
     }
 
-    velocity.x = direction * paddle.speed * TIME_STEP;
+    let last_time_diff = time.seconds_since_startup() - *last_time;
+
+    velocity.x = direction * paddle.speed * last_time_diff as f32;
+
+    *last_time = time.seconds_since_startup();
 }
 
 /// Ensures our paddle never goes out of bounds
