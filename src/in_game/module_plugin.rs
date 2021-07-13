@@ -5,7 +5,7 @@ use super::ball::{ball_collision, spawn_ball};
 use super::brick::spawn_bricks;
 use super::kinematics::kinematics;
 use super::paddle::{bound_paddle, paddle_input, spawn_paddle};
-use super::score::{spawn_scoreboard, update_scoreboard, Score};
+use super::score::{init_score, spawn_scoreboard, update_scoreboard};
 use super::wall::spawn_walls;
 
 struct SetupPlugin;
@@ -14,8 +14,8 @@ impl Plugin for SetupPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app
             // This adds the Score resource with its default value of 0
-            .init_resource::<Score>()
             // These systems run only once, before all other systems
+            .add_startup_system(init_score.system())
             .add_startup_system(set_background.system())
             .add_startup_system(spawn_paddle.system())
             .add_startup_system(spawn_ball.system())

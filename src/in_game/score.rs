@@ -68,6 +68,10 @@ impl ScoreboardBundle {
     }
 }
 
+pub fn init_score(mut commands: Commands) {
+    commands.insert_resource(Score::default());
+}
+
 pub fn spawn_scoreboard(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(ScoreboardBundle::new(asset_server));
 }
