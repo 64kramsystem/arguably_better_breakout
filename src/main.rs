@@ -21,11 +21,17 @@ use bevy::{
 use camera::spawn_cameras;
 use in_game::module_plugin::InGamePlugin;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum AppState {
+    InGame,
+}
+
 /// A simple implementation of the classic game "Breakout"
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_startup_system(spawn_cameras.system())
+        .add_state(AppState::InGame)
         .add_plugin(InGamePlugin)
         .run();
 }

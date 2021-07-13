@@ -1,5 +1,7 @@
 use bevy::{input::system::exit_on_esc_system, prelude::*};
 
+use crate::AppState;
+
 use super::background::set_background;
 use super::ball::{ball_collision, spawn_ball};
 use super::brick::spawn_bricks;
@@ -12,16 +14,18 @@ struct SetupPlugin;
 
 impl Plugin for SetupPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            // This adds the Score resource with its default value of 0
-            // These systems run only once, before all other systems
-            .add_startup_system(init_score.system())
-            .add_startup_system(set_background.system())
-            .add_startup_system(spawn_paddle.system())
-            .add_startup_system(spawn_ball.system())
-            .add_startup_system(spawn_walls.system())
-            .add_startup_system(spawn_bricks.system())
-            .add_startup_system(spawn_scoreboard.system());
+        app.add_system_set(
+            SystemSet::on_enter(AppState::InGame)
+                // This adds the Score resource with its default value of 0
+                // These systems run only once, before all other systems
+                .with_system(init_score.system())
+                .with_system(set_background.system())
+                .with_system(spawn_paddle.system())
+                .with_system(spawn_ball.system())
+                .with_system(spawn_walls.system())
+                .with_system(spawn_bricks.system())
+                .with_system(spawn_scoreboard.system()),
+        );
     }
 }
 
@@ -29,18 +33,21 @@ struct KinematicsPlugin;
 
 impl Plugin for KinematicsPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_system(kinematics.system().label("kinematics"))
-            // We need to check for collisions before handling movement
-            // to reduce the risk of the ball passing through objects
-            .add_system(ball_collision.system().before("kinematics"))
-            .add_system(
-                bound_paddle
-                    .system()
-                    .label("bound_paddle")
-                    // This system must run after kinematics, or the velocity will be set to 0
-                    // before the paddle moves, causing it to be stuck to the wall
-                    .after("kinematics"),
-            );
+        app.add_system_set(
+            SystemSet::on_update(AppState::InGame)
+                .with_system(kinematics.system().label("kinematics"))
+                // We need to check for collisions before handling movement
+                // to reduce the risk of the ball passing through objects
+                .with_system(ball_collision.system().before("kinematics"))
+                .with_system(
+                    bound_paddle
+                        .system()
+                        .label("bound_paddle")
+                        // This system must run after kinematics, or the velocity will be set to 0
+                        // before the paddle moves, causing it to be stuck to the wall
+                        .after("kinematics"),
+                ),
+        );
     }
 }
 
@@ -48,21 +55,23 @@ struct InputPlugin;
 
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            // We need to handle input before we move our paddle,
-            // to ensure that we're responding to the most recent frame's events,
-            // avoiding input lag
-            // See https://github.com/bevyengine/bevy/blob/latest/examples/ecs/ecs_guide.rs
-            // for more information on system ordering
-            .add_system(
-                paddle_input
-                    .system()
-                    .before("bound_paddle")
-                    .before("kinematics"),
-            )
-            // Exits the game when `KeyCode::Esc` is pressed
-            // This is a simple built-in system
-            .add_system(exit_on_esc_system.system());
+        app.add_system_set(
+            SystemSet::on_update(AppState::InGame)
+                // We need to handle input before we move our paddle,
+                // to ensure that we're responding to the most recent frame's events,
+                // avoiding input lag
+                // See https://github.com/bevyengine/bevy/blob/latest/examples/ecs/ecs_guide.rs
+                // for more information on system ordering
+                .with_system(
+                    paddle_input
+                        .system()
+                        .before("bound_paddle")
+                        .before("kinematics"),
+                )
+                // Exits the game when `KeyCode::Esc` is pressed
+                // This is a simple built-in system
+                .with_system(exit_on_esc_system.system()),
+        );
     }
 }
 
@@ -70,7 +79,9 @@ struct ScorePlugin;
 
 impl Plugin for ScorePlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_system(update_scoreboard.system());
+        app.add_system_set(
+            SystemSet::on_update(AppState::InGame).with_system(update_scoreboard.system()),
+        );
     }
 }
 
