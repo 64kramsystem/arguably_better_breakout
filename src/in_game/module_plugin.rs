@@ -2,7 +2,6 @@ use bevy::{input::system::exit_on_esc_system, prelude::*};
 
 use super::ball::{ball_collision, spawn_ball};
 use super::brick::spawn_bricks;
-use super::camera::spawn_cameras;
 use super::kinematics::kinematics;
 use super::paddle::{bound_paddle, paddle_input, spawn_paddle};
 use super::score::{spawn_scoreboard, update_scoreboard, Score};
@@ -18,7 +17,6 @@ impl Plugin for SetupPlugin {
             // This adds the Score resource with its default value of 0
             .init_resource::<Score>()
             // These systems run only once, before all other systems
-            .add_startup_system(spawn_cameras.system())
             .add_startup_system(spawn_paddle.system())
             .add_startup_system(spawn_ball.system())
             .add_startup_system(spawn_walls.system())
