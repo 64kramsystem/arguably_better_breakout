@@ -9,7 +9,7 @@ use bevy::{
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::{collides::Collides, velocity::Velocity};
+use super::{collides::Collides, velocity::Velocity};
 
 const PADDLE_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
 const PADDLE_SPEED: f32 = 20000.0;

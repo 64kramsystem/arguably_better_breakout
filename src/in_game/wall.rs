@@ -4,7 +4,7 @@ use bevy::{
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::collides::Collides;
+use super::collides::Collides;
 
 /// Defines which side of the arena a wall is part of
 pub const ARENA_BOUNDS: Vec2 = const_vec2!([900.0, 600.0]);

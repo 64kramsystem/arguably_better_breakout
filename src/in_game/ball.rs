@@ -10,7 +10,7 @@ use bevy::{
     },
 };
 
-use crate::{brick::Brick, collides::Collides, score::Score, Velocity};
+use super::{brick::Brick, collides::Collides, score::Score, velocity::Velocity};
 
 const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
 // Our ball is actually a square. Shhh...

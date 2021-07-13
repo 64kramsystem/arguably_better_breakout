@@ -3,7 +3,7 @@ use bevy::{
     prelude::{Local, Query, Res, Transform},
 };
 
-use crate::velocity::Velocity;
+use super::velocity::Velocity;
 
 /// Moves everything with both a Transform and a Velocity accordingly
 pub fn kinematics(

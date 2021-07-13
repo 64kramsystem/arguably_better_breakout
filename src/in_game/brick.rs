@@ -4,7 +4,7 @@ use bevy::{
     sprite::{ColorMaterial, Sprite},
 };
 
-use crate::collides::Collides;
+use super::collides::Collides;
 
 const BRICK_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
 const BRICK_WIDTH: f32 = 150.0;
