@@ -1,5 +1,6 @@
 use bevy::{input::system::exit_on_esc_system, prelude::*};
 
+use super::background::set_background;
 use super::ball::{ball_collision, spawn_ball};
 use super::brick::spawn_bricks;
 use super::kinematics::kinematics;
@@ -7,16 +8,15 @@ use super::paddle::{bound_paddle, paddle_input, spawn_paddle};
 use super::score::{spawn_scoreboard, update_scoreboard, Score};
 use super::wall::spawn_walls;
 
-const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
-
 struct SetupPlugin;
 
 impl Plugin for SetupPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.insert_resource(ClearColor(BACKGROUND_COLOR))
+        app
             // This adds the Score resource with its default value of 0
             .init_resource::<Score>()
             // These systems run only once, before all other systems
+            .add_startup_system(set_background.system())
             .add_startup_system(spawn_paddle.system())
             .add_startup_system(spawn_ball.system())
             .add_startup_system(spawn_walls.system())

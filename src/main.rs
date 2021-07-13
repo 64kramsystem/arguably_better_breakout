@@ -1,6 +1,7 @@
 mod camera;
 
 mod in_game {
+    mod background;
     mod ball;
     mod brick;
     mod collides;
