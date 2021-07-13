@@ -13,6 +13,12 @@ mod in_game {
     mod wall;
 }
 
+mod main_menu {
+    mod background;
+    mod menu;
+    pub mod module_plugin;
+}
+
 use bevy::{
     prelude::{App, IntoSystem},
     DefaultPlugins,
@@ -20,9 +26,11 @@ use bevy::{
 
 use camera::spawn_cameras;
 use in_game::module_plugin::InGamePlugin;
+use main_menu::module_plugin::MainMenuPlugin;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum AppState {
+    MainMenu,
     InGame,
 }
 
@@ -31,7 +39,8 @@ fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_startup_system(spawn_cameras.system())
-        .add_state(AppState::InGame)
+        .add_state(AppState::MainMenu)
+        .add_plugin(MainMenuPlugin)
         .add_plugin(InGamePlugin)
         .run();
 }
