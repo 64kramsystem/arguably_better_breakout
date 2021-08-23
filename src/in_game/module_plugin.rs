@@ -1,4 +1,4 @@
-use bevy::{input::system::exit_on_esc_system, prelude::*};
+use bevy::{core::FixedTimestep, input::system::exit_on_esc_system, prelude::*};
 
 use crate::AppState;
 
@@ -35,6 +35,7 @@ impl Plugin for KinematicsPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_system_set(
             SystemSet::on_update(AppState::InGame)
+                .with_run_criteria(FixedTimestep::step(1. / 50.))
                 .with_system(kinematics.system().label("kinematics"))
                 // We need to check for collisions before handling movement
                 // to reduce the risk of the ball passing through objects
