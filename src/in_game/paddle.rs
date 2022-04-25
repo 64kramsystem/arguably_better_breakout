@@ -3,10 +3,10 @@ use bevy::{
     input::Input,
     math::{const_quat, const_vec2, const_vec3, Vec2},
     prelude::{
-        Assets, Bundle, Color, Commands, KeyCode, Local, Query, Res, ResMut, SpriteBundle,
-        Transform, With,
+        Bundle, Color, Commands, Component, KeyCode, Local, Query, Res, SpriteBundle, Transform,
+        With,
     },
-    sprite::{ColorMaterial, Sprite},
+    sprite::Sprite,
 };
 
 use super::{collides::Collides, velocity::Velocity};
@@ -23,6 +23,7 @@ const PADDLE_STARTING_TRANSFORM: Transform = Transform {
     scale: const_vec3!([1.0, 1.0, 1.0]),
 };
 
+#[derive(Component)]
 pub struct Paddle {
     pub speed: f32,
 }
@@ -37,12 +38,15 @@ struct PaddleBundle {
 }
 
 impl PaddleBundle {
-    fn new(mut materials: ResMut<Assets<ColorMaterial>>) -> Self {
+    fn new() -> Self {
         Self {
             sprite_bundle: SpriteBundle {
-                material: materials.add(PADDLE_COLOR.into()),
                 transform: PADDLE_STARTING_TRANSFORM,
-                sprite: Sprite::new(PADDLE_SIZE),
+                sprite: Sprite {
+                    color: PADDLE_COLOR,
+                    custom_size: Some(PADDLE_SIZE),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             paddle: Paddle {
@@ -54,8 +58,8 @@ impl PaddleBundle {
     }
 }
 
-pub fn spawn_paddle(mut commands: Commands, materials: ResMut<Assets<ColorMaterial>>) {
-    commands.spawn_bundle(PaddleBundle::new(materials));
+pub fn spawn_paddle(mut commands: Commands) {
+    commands.spawn_bundle(PaddleBundle::new());
 }
 
 /// Reads left and right arrow key inputs to set paddle velocity
@@ -65,7 +69,7 @@ pub fn paddle_input(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&Paddle, &mut Velocity)>,
 ) {
-    let (paddle, mut velocity) = query.single_mut().unwrap();
+    let (paddle, mut velocity) = query.single_mut();
 
     let mut direction = 0.0;
     // Adds to the direction rather than just setting it to
@@ -87,7 +91,7 @@ pub fn paddle_input(
 
 /// Ensures our paddle never goes out of bounds
 pub fn bound_paddle(mut query: Query<(&mut Transform, &mut Velocity), With<Paddle>>) {
-    let (mut paddle_transform, mut paddle_velocity) = query.single_mut().unwrap();
+    let (mut paddle_transform, mut paddle_velocity) = query.single_mut();
 
     if paddle_transform.translation.x >= PADDLE_BOUND {
         paddle_transform.translation.x = PADDLE_BOUND;

@@ -10,7 +10,7 @@ pub fn kinematics(
     mut last_time: Local<f64>,
     mut post_first_invocation: Local<bool>,
     time: Res<Time>,
-    query: Query<(&mut Transform, &Velocity)>,
+    mut query: Query<(&mut Transform, &Velocity)>,
 ) {
     let mut last_time_diff = time.seconds_since_startup() - *last_time;
 

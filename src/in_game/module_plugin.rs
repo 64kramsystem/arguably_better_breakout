@@ -13,7 +13,7 @@ use super::wall::spawn_walls;
 struct SetupPlugin;
 
 impl Plugin for SetupPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_enter(AppState::InGame)
                 // This adds the Score resource with its default value of 0
@@ -32,7 +32,7 @@ impl Plugin for SetupPlugin {
 struct KinematicsPlugin;
 
 impl Plugin for KinematicsPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_update(AppState::InGame)
                 .with_system(kinematics.system().label("kinematics"))
@@ -54,7 +54,7 @@ impl Plugin for KinematicsPlugin {
 struct InputPlugin;
 
 impl Plugin for InputPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_update(AppState::InGame)
                 // We need to handle input before we move our paddle,
@@ -78,7 +78,7 @@ impl Plugin for InputPlugin {
 struct ScorePlugin;
 
 impl Plugin for ScorePlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_update(AppState::InGame).with_system(update_scoreboard.system()),
         );
@@ -88,7 +88,7 @@ impl Plugin for ScorePlugin {
 pub struct InGamePlugin;
 
 impl Plugin for InGamePlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_plugin(SetupPlugin)
             .add_plugin(KinematicsPlugin)
             .add_plugin(InputPlugin)

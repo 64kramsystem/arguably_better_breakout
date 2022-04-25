@@ -1,12 +1,12 @@
 use bevy::{
     math::{const_quat, const_vec2, const_vec3, Vec2},
     prelude::{
-        Assets, Bundle, Color, Commands, Entity, Query, ResMut, SpriteBundle, Transform, With,
+        Bundle, Color, Commands, Component, Entity, Query, ResMut, SpriteBundle, Transform, With,
         Without,
     },
     sprite::{
         collide_aabb::{collide, Collision},
-        ColorMaterial, Sprite,
+        Sprite,
     },
 };
 
@@ -24,6 +24,7 @@ const BALL_STARTING_TRANSFORM: Transform = Transform {
     scale: const_vec3!([1.0, 1.0, 1.0]),
 };
 
+#[derive(Component)]
 pub struct Ball;
 
 #[derive(Bundle)]
@@ -36,12 +37,15 @@ struct BallBundle {
 }
 
 impl BallBundle {
-    fn new(ball_starting_velocity: Velocity, mut materials: ResMut<Assets<ColorMaterial>>) -> Self {
+    fn new(ball_starting_velocity: Velocity) -> Self {
         Self {
             sprite_bundle: SpriteBundle {
-                material: materials.add(BALL_COLOR.into()),
                 transform: BALL_STARTING_TRANSFORM,
-                sprite: Sprite::new(BALL_SIZE),
+                sprite: Sprite {
+                    color: BALL_COLOR,
+                    custom_size: Some(BALL_SIZE),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             ball: Ball,
@@ -51,7 +55,7 @@ impl BallBundle {
     }
 }
 
-pub fn spawn_ball(mut commands: Commands, materials: ResMut<Assets<ColorMaterial>>) {
+pub fn spawn_ball(mut commands: Commands) {
     // .normalize is not a const fn, so we have to perform this operation at runtime
     // FIXME: Blocked on https://github.com/bitshifter/glam-rs/issues/76
     let normalized_direction = BALL_STARTING_DIRECTION.normalize();
@@ -60,7 +64,7 @@ pub fn spawn_ball(mut commands: Commands, materials: ResMut<Assets<ColorMaterial
         y: normalized_direction.y * BALL_STARTING_SPEED,
     };
 
-    commands.spawn_bundle(BallBundle::new(ball_starting_velocity, materials));
+    commands.spawn_bundle(BallBundle::new(ball_starting_velocity));
 }
 
 /// Detects and handles ball collisions
@@ -74,13 +78,13 @@ pub fn ball_collision(
     mut commands: Commands,
     mut score: ResMut<Score>,
 ) {
-    let (ball_transform, mut ball_velocity, ball_sprite) = ball_query.single_mut().unwrap();
-    let ball_size = ball_sprite.size;
+    let (ball_transform, mut ball_velocity, ball_sprite) = ball_query.single_mut();
+    let ball_size = ball_sprite.custom_size.unwrap();
 
     collider_query.for_each(
         |(collider_entity, collider_transform, collider_sprite, maybe_brick)| {
             // Check for collisions
-            let collider_size = collider_sprite.size;
+            let collider_size = collider_sprite.custom_size.unwrap();
             let potential_collision = collide(
                 ball_transform.translation,
                 ball_size,

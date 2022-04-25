@@ -1,6 +1,6 @@
 use bevy::{
     math::Rect,
-    prelude::{AssetServer, Bundle, Color, Commands, Query, Res, TextBundle, With},
+    prelude::{AssetServer, Bundle, Color, Commands, Component, Query, Res, TextBundle, With},
     text::{Text, TextSection, TextStyle},
     ui::{PositionType, Style, Val},
 };
@@ -15,6 +15,7 @@ const SCORE_FONT_PATH: &str = "fonts/FiraSans-Bold.ttf";
 #[derive(Default)]
 pub struct Score(pub usize);
 
+#[derive(Component)]
 pub struct Scoreboard;
 
 #[derive(Bundle)]
@@ -78,7 +79,7 @@ pub fn spawn_scoreboard(mut commands: Commands, asset_server: Res<AssetServer>) 
 
 /// Updates the Scoreboard entity's Text based on the value of the Score resource
 pub fn update_scoreboard(score: Res<Score>, mut query: Query<&mut Text, With<Scoreboard>>) {
-    let mut scoreboard_text = query.single_mut().unwrap();
+    let mut scoreboard_text = query.single_mut();
     // We need to access the second section, so we need to access the sections field at the [1] index
     // (Rust is 0-indexed: https://medium.com/analytics-vidhya/array-indexing-0-based-or-1-based-dd89d631d11c)
     scoreboard_text.sections[1].value = format!("{}", score.0);

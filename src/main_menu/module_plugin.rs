@@ -10,7 +10,7 @@ use super::{
 struct SetupPlugin;
 
 impl Plugin for SetupPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_enter(AppState::MainMenu)
                 .with_system(set_background.system())
@@ -22,7 +22,7 @@ impl Plugin for SetupPlugin {
 struct InputPlugin;
 
 impl Plugin for InputPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_update(AppState::MainMenu).with_system(start_game_on_enter.system()),
         );
@@ -32,7 +32,7 @@ impl Plugin for InputPlugin {
 pub struct MainMenuPlugin;
 
 impl Plugin for MainMenuPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_plugin(SetupPlugin).add_plugin(InputPlugin);
     }
 }

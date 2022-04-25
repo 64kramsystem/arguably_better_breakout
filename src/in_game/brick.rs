@@ -1,7 +1,7 @@
 use bevy::{
     math::Vec2,
-    prelude::{Assets, Bundle, Color, Commands, Handle, ResMut, SpriteBundle, Transform},
-    sprite::{ColorMaterial, Sprite},
+    prelude::{Bundle, Color, Commands, Component, SpriteBundle, Transform},
+    sprite::Sprite,
 };
 
 use super::collides::Collides;
@@ -13,6 +13,7 @@ const BRICK_ROWS: i8 = 4;
 const BRICK_COLUMNS: i8 = 5;
 const BRICK_SPACING: f32 = 20.0;
 
+#[derive(Component)]
 pub struct Brick;
 
 #[derive(Bundle)]
@@ -24,12 +25,15 @@ struct BrickBundle {
 }
 
 impl BrickBundle {
-    fn new(x: f32, y: f32, material_handle: Handle<ColorMaterial>) -> Self {
+    fn new(x: f32, y: f32, color: Color) -> Self {
         BrickBundle {
             sprite_bundle: SpriteBundle {
-                material: material_handle,
                 transform: Transform::from_xyz(x, y, 0.0),
-                sprite: Sprite::new(Vec2::new(BRICK_WIDTH, BRICK_HEIGHT)),
+                sprite: Sprite {
+                    color,
+                    custom_size: Some(Vec2::new(BRICK_WIDTH, BRICK_HEIGHT)),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             brick: Brick,
@@ -38,9 +42,7 @@ impl BrickBundle {
     }
 }
 
-pub fn spawn_bricks(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    let brick_material = materials.add(BRICK_COLOR.into());
-
+pub fn spawn_bricks(mut commands: Commands) {
     // Compute the total width that all of the bricks take
     const TOTAL_WIDTH: f32 = BRICK_COLUMNS as f32 * (BRICK_WIDTH + BRICK_SPACING) - BRICK_SPACING;
     // Center the bricks
@@ -55,7 +57,7 @@ pub fn spawn_bricks(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
             BrickBundle::new(
                 column as f32 * (BRICK_WIDTH + BRICK_SPACING) + OFFSET_X,
                 row as f32 * (BRICK_HEIGHT + BRICK_SPACING) + OFFSET_Y,
-                brick_material.clone(),
+                BRICK_COLOR,
             )
         });
     // spawn_batch is slightly more efficient than repeatedly calling .spawn_bundle due to memory pre-allocation

@@ -36,7 +36,7 @@ pub enum AppState {
 
 /// A simple implementation of the classic game "Breakout"
 fn main() {
-    App::build()
+    App::new()
         .add_plugins(DefaultPlugins)
         .add_startup_system(spawn_cameras.system())
         .add_state(AppState::MainMenu)

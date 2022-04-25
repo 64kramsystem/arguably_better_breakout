@@ -1,7 +1,7 @@
 use bevy::{
     math::{const_vec2, Vec2},
-    prelude::{Assets, Bundle, Color, Commands, Handle, ResMut, SpriteBundle, Transform},
-    sprite::{ColorMaterial, Sprite},
+    prelude::{Bundle, Color, Commands, SpriteBundle, Transform},
+    sprite::Sprite,
 };
 
 use super::collides::Collides;
@@ -50,12 +50,15 @@ struct WallBundle {
 }
 
 impl WallBundle {
-    fn new(side: Side, material_handle: Handle<ColorMaterial>) -> Self {
+    fn new(side: Side, color: Color) -> Self {
         WallBundle {
             sprite_bundle: SpriteBundle {
-                material: material_handle,
                 transform: side.wall_coord(ARENA_BOUNDS),
-                sprite: Sprite::new(side.wall_size(ARENA_BOUNDS, WALL_THICKNESS)),
+                sprite: Sprite {
+                    color,
+                    custom_size: Some(side.wall_size(ARENA_BOUNDS, WALL_THICKNESS)),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             collides: Collides,
@@ -63,12 +66,10 @@ impl WallBundle {
     }
 }
 
-pub fn spawn_walls(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    let material_handle = materials.add(WALL_COLOR.into());
-
+pub fn spawn_walls(mut commands: Commands) {
     // Each material handle must be uniquely owned as handles are ref-counted
-    commands.spawn_bundle(WallBundle::new(Side::Top, material_handle.clone()));
-    commands.spawn_bundle(WallBundle::new(Side::Bottom, material_handle.clone()));
-    commands.spawn_bundle(WallBundle::new(Side::Left, material_handle.clone()));
-    commands.spawn_bundle(WallBundle::new(Side::Right, material_handle));
+    commands.spawn_bundle(WallBundle::new(Side::Top, WALL_COLOR));
+    commands.spawn_bundle(WallBundle::new(Side::Bottom, WALL_COLOR));
+    commands.spawn_bundle(WallBundle::new(Side::Left, WALL_COLOR));
+    commands.spawn_bundle(WallBundle::new(Side::Right, WALL_COLOR));
 }
